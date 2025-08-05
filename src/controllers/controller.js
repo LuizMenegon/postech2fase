@@ -1,10 +1,15 @@
 const express = require('express');
 const { Teacher, Discipline, Class } = require('../models');
 
+console.log('Models loaded:', { Teacher, Discipline, Class });
+
 const createTeacher = async (req, res) => {
     try {
+        console.log('createTeacher called with body:', req.body);
         const { name, email } = req.body;
+        console.log('Extracted data:', { name, email });
         const newTeacher = await Teacher.create({ name, email });
+        console.log('Teacher created:', newTeacher);
         res.status(201).json(newTeacher);
     } catch (error) {
         console.error("Error creating teacher:", error);

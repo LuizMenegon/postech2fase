@@ -1,25 +1,26 @@
-version: '3.8'
-
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     depends_on:
-      - postgres
+      db:
+        condition: service_healthy
     environment:
-      - DATABASE_URL=postgresql://myuser:mypassword@postgres:5432/welearn
-    volumes:
-      - .:/app
-      - /app/node_modules
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/welearn
+    # volumes:
+    #   - .:/app
+    #   - /app/node_modules
     networks:
       - app-network
 
-  postgres:
+  db:
     image: postgres:15-alpine
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: welearn
     ports:
       - "5432:5432"
@@ -27,6 +28,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:
