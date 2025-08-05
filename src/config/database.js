@@ -2,7 +2,7 @@ module.exports = {
     dialect: 'postgres',
     host: process.env.DB_HOST || 'db',
     port: process.env.DB_PORT || 5432,
-    username: process.env.DB_USERNAME || 'myuser',
-    password: process.env.DB_PASSWORD || 'mypassword',
+    username: process.env.DB_USERNAME || 'postgres',
+    password: process.env.DB_PASSWORD || 'postgres',
     database: process.env.DB_NAME || 'welearn'
 };
