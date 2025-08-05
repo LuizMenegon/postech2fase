@@ -68,8 +68,8 @@ const getTeacher = async (req, res) => {
 
 const createClass = async (req, res) => {
     try {
-        const { name, disciplineId } = req.body;
-        const newClass = await Class.create({ name, disciplineId });
+        const { name, disciplineId, description, image, startDate, endDate } = req.body;
+        const newClass = await Class.create({ name, disciplineId, description, image, startDate, endDate });
         res.status(201).json(newClass);
     } catch (error) {
         console.error("Error creating class:", error);
@@ -80,8 +80,8 @@ const createClass = async (req, res) => {
 const updateClass = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, disciplineId } = req.body;
-        const [updated] = await Class.update({ name, disciplineId }, {
+        const { name, disciplineId, description, image, startDate, endDate } = req.body;
+        const [updated] = await Class.update({ name, disciplineId, description, image, startDate, endDate }, {
             where: { ID: id }
         });
         if (updated) {
