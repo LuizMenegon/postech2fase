@@ -143,8 +143,8 @@ const getAllClasses = async (req, res) => {
 
 const createDiscipline = async (req, res) => {
     try {
-        const { name, description} = req.body;
-        const newDiscipline = await Discipline.create({ name, description });
+        const { name, teacherId, description } = req.body;
+        const newDiscipline = await Discipline.create({ name, teacherId, description });
         res.status(201).json(newDiscipline);
     } catch (error) {
         console.error("Error creating discipline:", error);
