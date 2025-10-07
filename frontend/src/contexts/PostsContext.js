@@ -41,21 +41,22 @@ const postsReducer = (state, action) => {
       };
     case 'ADD_POST':
       const newPosts = [action.payload, ...state.posts];
+      const newFilteredPosts = state.searchTerm ? 
+        newPosts.filter(post => 
+          post.title.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
+          post.content.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
+          post.author.toLowerCase().includes(state.searchTerm.toLowerCase())
+        ) : newPosts;
       return {
         ...state,
         posts: newPosts,
-        filteredPosts: state.searchTerm ? 
-          newPosts.filter(post => 
-            post.title.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
-            post.content.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
-            post.author.toLowerCase().includes(state.searchTerm.toLowerCase())
-          ) : newPosts,
+        filteredPosts: newFilteredPosts,
         loading: false,
         error: null
       };
     case 'UPDATE_POST':
       const updatedPosts = state.posts.map(post =>
-        post.id === action.payload.id ? action.payload : post
+        post.ID === action.payload.ID || post.id === action.payload.id || post.ID === action.payload.id || post.id === action.payload.ID ? action.payload : post
       );
       return {
         ...state,
@@ -66,12 +67,12 @@ const postsReducer = (state, action) => {
             post.content.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
             post.author.toLowerCase().includes(state.searchTerm.toLowerCase())
           ) : updatedPosts,
-        currentPost: state.currentPost?.id === action.payload.id ? action.payload : state.currentPost,
+        currentPost: (state.currentPost?.id === action.payload.id || state.currentPost?.ID === action.payload.ID || state.currentPost?.id === action.payload.ID || state.currentPost?.ID === action.payload.id) ? action.payload : state.currentPost,
         loading: false,
         error: null
       };
     case 'DELETE_POST':
-      const remainingPosts = state.posts.filter(post => post.id !== action.payload);
+      const remainingPosts = state.posts.filter(post => (post.ID || post.id) !== action.payload);
       return {
         ...state,
         posts: remainingPosts,
@@ -115,6 +116,43 @@ const postsReducer = (state, action) => {
 
 export const PostsProvider = ({ children }) => {
   const [state, dispatch] = useReducer(postsReducer, initialState);
+
+  // Inicializar com posts padrão apenas uma vez
+  React.useEffect(() => {
+    if (state.posts.length === 0) {
+      const initialPosts = [
+        {
+          ID: 1,
+          id: 1,
+          title: 'Bem-vindos ao Blog da POSTECH',
+          content: 'Este é o primeiro post do nosso blog acadêmico. Aqui compartilharemos conhecimentos, experiências e descobertas do mundo da tecnologia e inovação.',
+          author: 'Prof. Silva',
+          authorType: 'teacher',
+          createdAt: new Date('2024-01-01'),
+        },
+        {
+          ID: 2,
+          id: 2,
+          title: 'Inteligência Artificial na Educação',
+          content: 'A inteligência artificial está revolucionando a forma como ensinamos e aprendemos. Neste post, exploramos as principais aplicações da IA no contexto educacional.',
+          author: 'Prof. Maria Santos',
+          authorType: 'teacher',
+          createdAt: new Date('2024-01-02'),
+        },
+        {
+          ID: 3,
+          id: 3,
+          title: 'Desenvolvimento Full Stack Moderno',
+          content: 'O desenvolvimento full stack evoluiu significativamente nos últimos anos. Discutimos as principais tecnologias e frameworks.',
+          author: 'Prof. João Oliveira',
+          authorType: 'teacher',
+          createdAt: new Date('2024-01-03'),
+        }
+      ];
+      
+      dispatch({ type: 'SET_POSTS', payload: initialPosts });
+    }
+  }, [state.posts.length]);
 
   const setLoading = (loading) => {
     dispatch({ type: 'SET_LOADING', payload: loading });

@@ -1,4 +1,5 @@
 const Teacher = require('./Teacher');
+const Student = require('./Student');
 const Discipline = require('./Discipline');
 const Class = require('./Class');
 const Post = require('./Post');
@@ -26,6 +27,7 @@ Class.belongsTo(Discipline, {
 
 module.exports = {
     Teacher,
+    Student,
     Discipline,
     Class,
     Post

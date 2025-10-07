@@ -185,7 +185,7 @@ const Admin = () => {
   };
 
   const handleDeleteClick = (postId) => {
-    const post = posts.find(p => p.id === postId);
+    const post = posts.find(p => (p.ID || p.id) === postId);
     if (post) {
       setDeleteModalPost(post);
     }
@@ -291,7 +291,7 @@ const Admin = () => {
             <PostsGrid>
               {filteredPosts.map(post => (
                 <PostCard
-                  key={post.id}
+                  key={post.ID || post.id}
                   post={post}
                   showAdminActions={true}
                   onEdit={handleEdit}

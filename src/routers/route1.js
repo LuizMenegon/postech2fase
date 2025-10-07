@@ -28,4 +28,13 @@ router.post('/posts', controller.createPost);
 router.put('/posts/:id', controller.updatePost);
 router.delete('/posts/:id', controller.deletePost);
 
+// Students routes
+router.post('/createStudent', controller.createStudent);
+router.get('/getStudent/:id', controller.getStudent);
+router.put('/updateStudent/:id', controller.updateStudent);
+router.delete('/deleteStudent/:id', controller.deleteStudent);
+router.get('/getAllStudents', controller.getAllStudents);
+router.post('/loginStudent', controller.loginStudent);
+router.get('/students/:id/posts', controller.getPostsByStudentId);
+
 module.exports = router;

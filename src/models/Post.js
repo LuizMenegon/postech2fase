@@ -32,6 +32,17 @@ const Post = sequelize.define('Post', {
       len: [2, 100]
     }
   },
+  authorType: {
+    type: DataTypes.ENUM('teacher', 'student'),
+    allowNull: false,
+    defaultValue: 'teacher',
+    comment: 'Tipo do autor: teacher ou student'
+  },
+  authorId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    comment: 'ID do autor (teacher ou student)'
+  },
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,

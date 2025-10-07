@@ -92,7 +92,7 @@ const PostCard = ({ post, showAdminActions = false, onEdit, onDelete }) => {
       </PostExcerpt>
       
       <PostActions>
-        <ReadMoreLink to={`/post/${post.id}`}>
+        <ReadMoreLink to={`/post/${post.ID || post.id}`}>
           Ler mais →
         </ReadMoreLink>
         
@@ -101,14 +101,14 @@ const PostCard = ({ post, showAdminActions = false, onEdit, onDelete }) => {
             <Button 
               size="sm" 
               variant="outline" 
-              onClick={() => onEdit(post.id)}
+              onClick={() => onEdit(post.ID || post.id)}
             >
               Editar
             </Button>
             <Button 
               size="sm" 
               variant="danger" 
-              onClick={() => onDelete(post.id)}
+              onClick={() => onDelete(post.ID || post.id)}
             >
               Excluir
             </Button>

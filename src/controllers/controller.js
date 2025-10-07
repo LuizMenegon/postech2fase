@@ -1,7 +1,7 @@
 const express = require('express');
-const { Teacher, Discipline, Class, Post } = require('../models');
+const { Teacher, Student, Discipline, Class, Post } = require('../models');
 
-console.log('Models loaded:', { Teacher, Discipline, Class, Post });
+console.log('Models loaded:', { Teacher, Student, Discipline, Class, Post });
 
 const createTeacher = async (req, res) => {
     try {
@@ -227,7 +227,13 @@ const createPost = async (req, res) => {
             });
         }
         
-        const newPost = await Post.create({ title, content, author });
+        const newPost = await Post.create({ 
+            title, 
+            content, 
+            author,
+            authorType: req.body.authorType || 'teacher',
+            authorId: req.body.authorId || null
+        });
         console.log('Post created:', newPost);
         res.status(201).json(newPost);
     } catch (error) {
@@ -342,5 +348,177 @@ module.exports = {
     getPostById,
     updatePost,
     deletePost
+};
+
+// ========== STUDENTS CONTROLLERS ==========
+
+const createStudent = async (req, res) => {
+    try {
+        console.log('createStudent called with body:', req.body);
+        const { name, email, password, studentId, course } = req.body;
+        
+        // Validações básicas
+        if (!name || !email || !password || !studentId) {
+            return res.status(400).json({ 
+                error: "Nome, email, senha e número de matrícula são obrigatórios" 
+            });
+        }
+        
+        const newStudent = await Student.create({ name, email, password, studentId, course });
+        console.log('Student created:', newStudent);
+        
+        // Não retornar a senha
+        const { password: _, ...studentWithoutPassword } = newStudent.toJSON();
+        res.status(201).json(studentWithoutPassword);
+    } catch (error) {
+        console.error("Error creating student:", error);
+        if (error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(400).json({ error: "Email ou matrícula já cadastrados" });
+        }
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+const updateStudent = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, email, course } = req.body;
+        
+        const [updated] = await Student.update(
+            { name, email, course }, 
+            { where: { ID: id } }
+        );
+        
+        if (updated) {
+            const updatedStudent = await Student.findOne({ where: { ID: id } });
+            const { password: _, ...studentWithoutPassword } = updatedStudent.toJSON();
+            res.status(200).json(studentWithoutPassword);
+        } else {
+            res.status(404).json({ error: "Student not found" });
+        }
+    } catch (error) {
+        console.error("Error updating student:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+const deleteStudent = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deleted = await Student.destroy({ where: { ID: id } });
+        
+        if (deleted) {
+            res.status(204).send();
+        } else {
+            res.status(404).json({ error: "Student not found" });
+        }
+    } catch (error) {
+        console.error("Error deleting student:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+const getStudent = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const student = await Student.findOne({ where: { ID: id } });
+        
+        if (student) {
+            const { password: _, ...studentWithoutPassword } = student.toJSON();
+            res.status(200).json(studentWithoutPassword);
+        } else {
+            res.status(404).json({ error: "Student not found" });
+        }
+    } catch (error) {
+        console.error("Error fetching student:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+const getAllStudents = async (req, res) => {
+    try {
+        const students = await Student.findAll({
+            attributes: { exclude: ['password'] }
+        });
+        res.status(200).json(students);
+    } catch (error) {
+        console.error("Error getting students:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+// Autenticação de estudante
+const loginStudent = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        
+        if (!email || !password) {
+            return res.status(400).json({ error: "Email e senha são obrigatórios" });
+        }
+        
+        const student = await Student.findOne({ where: { email } });
+        
+        if (!student || student.password !== password) {
+            return res.status(401).json({ error: "Credenciais inválidas" });
+        }
+        
+        const { password: _, ...studentWithoutPassword } = student.toJSON();
+        res.status(200).json({
+            message: "Login realizado com sucesso",
+            user: studentWithoutPassword,
+            userType: 'student'
+        });
+    } catch (error) {
+        console.error("Error in student login:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+// Obter posts de um estudante específico
+const getPostsByStudentId = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const posts = await Post.findAll({
+            where: { 
+                authorType: 'student',
+                authorId: id 
+            },
+            order: [['createdAt', 'DESC']]
+        });
+        res.status(200).json(posts);
+    } catch (error) {
+        console.error("Error getting student posts:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+module.exports = {
+    createTeacher,
+    updateTeacher,
+    deleteTeacher,
+    getTeacher,
+    createClass,
+    updateClass,
+    deleteClass,
+    getClass,
+    getAllClasses,
+    createDiscipline,
+    updateDiscipline,
+    deleteDiscipline,
+    getDiscipline,
+    // Posts functions
+    createPost,
+    getAllPosts,
+    getPostById,
+    updatePost,
+    deletePost,
+    // Students functions
+    createStudent,
+    updateStudent,
+    deleteStudent,
+    getStudent,
+    getAllStudents,
+    loginStudent,
+    getPostsByStudentId
 };
 

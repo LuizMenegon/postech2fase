@@ -231,7 +231,7 @@ const Login = () => {
           </LoginForm>
           
           <InfoSection>
-            <InfoTitle>Acesso para Professores</InfoTitle>
+            <InfoTitle>👨‍🏫 Acesso para Professores</InfoTitle>
             <InfoText>
               Este sistema é exclusivo para professores da Postech.
             </InfoText>
@@ -242,6 +242,10 @@ const Login = () => {
               Exemplo: professor@postech.com / 123456
             </InfoText>
           </InfoSection>
+          
+          <BackLink to="/students/login">
+            🎓 Sou estudante - Fazer login como estudante
+          </BackLink>
           
           <BackLink to="/">
             ← Voltar para página inicial

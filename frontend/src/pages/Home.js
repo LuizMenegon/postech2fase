@@ -55,25 +55,8 @@ const Home = () => {
     clearError
   } = usePosts();
 
-  useEffect(() => {
-    loadPosts();
-  }, []);
-
-  const loadPosts = async () => {
-    try {
-      setLoading(true);
-      clearError();
-      
-      // Usando API real
-      const posts = await postsService.getAllPosts();
-      setPosts(posts);
-      
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Não precisa mais de useEffect para carregar posts iniciais
+  // O PostsContext já faz isso automaticamente
 
   const handleSearch = (term) => {
     setSearchTerm(term);
@@ -107,7 +90,7 @@ const Home = () => {
         {filteredPosts.length > 0 ? (
           <PostsGrid>
             {filteredPosts.map(post => (
-              <PostCard key={post.id} post={post} />
+              <PostCard key={post.ID || post.id} post={post} />
             ))}
           </PostsGrid>
         ) : (

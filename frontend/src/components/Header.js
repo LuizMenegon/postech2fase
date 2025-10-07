@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useStudentAuth } from '../contexts/StudentAuthContext';
 import { Container, Button } from '../styles/GlobalStyles';
 
 const HeaderContainer = styled.header`
@@ -79,6 +80,7 @@ const LogoutButton = styled(Button)`
 
 const Header = () => {
   const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated: isStudentAuthenticated, student, logout: studentLogout } = useStudentAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -86,10 +88,15 @@ const Header = () => {
     navigate('/');
   };
 
+  const handleStudentLogout = () => {
+    studentLogout();
+    navigate('/');
+  };
+
   return (
     <HeaderContainer>
       <HeaderContent>
-        <Logo to="/">We Learn</Logo>
+        <Logo to="/">🎓 We Learn</Logo>
         
         <Nav>
           <NavLink to="/">Início</NavLink>
@@ -99,14 +106,28 @@ const Header = () => {
               <NavLink to="/create">Criar Post</NavLink>
               <NavLink to="/admin">Administração</NavLink>
               <UserInfo>
-                <UserName>Olá, {user?.name}</UserName>
+                <UserName>👨‍🏫 {user?.name}</UserName>
                 <LogoutButton onClick={handleLogout}>
                   Sair
                 </LogoutButton>
               </UserInfo>
             </>
+          ) : isStudentAuthenticated ? (
+            <>
+              <NavLink to="/student-dashboard">Meus Posts</NavLink>
+              <NavLink to="/student/create-post">Criar Post</NavLink>
+              <UserInfo>
+                <UserName>🎓 {student?.name}</UserName>
+                <LogoutButton onClick={handleStudentLogout}>
+                  Sair
+                </LogoutButton>
+              </UserInfo>
+            </>
           ) : (
-            <NavLink to="/login">Login</NavLink>
+            <>
+              <NavLink to="/login">Professor</NavLink>
+              <NavLink to="/students/login">Estudante</NavLink>
+            </>
           )}
         </Nav>
       </HeaderContent>
