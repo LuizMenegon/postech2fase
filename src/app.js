@@ -18,18 +18,27 @@ app.use(express.json());
 // Routes
 app.use('/api', router);
 
+// Health check endpoint para Docker
+app.get('/health', (req, res) => {
+    res.status(200).json({ 
+        status: 'OK', 
+        timestamp: new Date().toISOString(),
+        service: 'POSTECH Blog Backend'
+    });
+});
+
 // Database synchronization (DEPOIS de importar os modelos)
 sequelize.sync({ force: false })
     .then(() => {
         console.log("Database synchronized successfully.");
-        console.log("Tables created: Teacher, Discipline, Class");
+        console.log("Tables created: Teacher, Discipline, Class, Post");
     })
     .catch((error) => {
         console.error("Error synchronizing the database:", error);
     });
 
 // Server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

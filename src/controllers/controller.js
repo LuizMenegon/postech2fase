@@ -1,7 +1,7 @@
 const express = require('express');
-const { Teacher, Discipline, Class } = require('../models');
+const { Teacher, Discipline, Class, Post } = require('../models');
 
-console.log('Models loaded:', { Teacher, Discipline, Class });
+console.log('Models loaded:', { Teacher, Discipline, Class, Post });
 
 const createTeacher = async (req, res) => {
     try {
@@ -201,6 +201,127 @@ const getDiscipline = async (req, res) => {
     }
 };
 
+// ========== POSTS CONTROLLERS ==========
+
+const createPost = async (req, res) => {
+    try {
+        console.log('createPost called with body:', req.body);
+        const { title, content, author } = req.body;
+        
+        // Validações básicas
+        if (!title || !content || !author) {
+            return res.status(400).json({ 
+                error: "Título, conteúdo e autor são obrigatórios" 
+            });
+        }
+        
+        if (title.length < 5) {
+            return res.status(400).json({ 
+                error: "O título deve ter pelo menos 5 caracteres" 
+            });
+        }
+        
+        if (content.length < 20) {
+            return res.status(400).json({ 
+                error: "O conteúdo deve ter pelo menos 20 caracteres" 
+            });
+        }
+        
+        const newPost = await Post.create({ title, content, author });
+        console.log('Post created:', newPost);
+        res.status(201).json(newPost);
+    } catch (error) {
+        console.error("Error creating post:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+const getAllPosts = async (req, res) => {
+    try {
+        console.log('getAllPosts called');
+        const posts = await Post.findAll({
+            order: [['createdAt', 'DESC']]
+        });
+        console.log('Posts found:', posts.length);
+        res.status(200).json(posts);
+    } catch (error) {
+        console.error("Error getting posts:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+const getPostById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log('getPostById called with id:', id);
+        
+        const post = await Post.findOne({ where: { ID: id } });
+        
+        if (post) {
+            res.status(200).json(post);
+        } else {
+            res.status(404).json({ error: "Post not found" });
+        }
+    } catch (error) {
+        console.error("Error getting post:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+const updatePost = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, content, author } = req.body;
+        console.log('updatePost called with id:', id, 'body:', req.body);
+        
+        // Validações básicas
+        if (title && title.length < 5) {
+            return res.status(400).json({ 
+                error: "O título deve ter pelo menos 5 caracteres" 
+            });
+        }
+        
+        if (content && content.length < 20) {
+            return res.status(400).json({ 
+                error: "O conteúdo deve ter pelo menos 20 caracteres" 
+            });
+        }
+        
+        const [updated] = await Post.update(
+            { title, content, author }, 
+            { where: { ID: id } }
+        );
+        
+        if (updated) {
+            const updatedPost = await Post.findOne({ where: { ID: id } });
+            res.status(200).json(updatedPost);
+        } else {
+            res.status(404).json({ error: "Post not found" });
+        }
+    } catch (error) {
+        console.error("Error updating post:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+const deletePost = async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log('deletePost called with id:', id);
+        
+        const deleted = await Post.destroy({ where: { ID: id } });
+        
+        if (deleted) {
+            res.status(204).send();
+        } else {
+            res.status(404).json({ error: "Post not found" });
+        }
+    } catch (error) {
+        console.error("Error deleting post:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
 module.exports = {
     createTeacher,
     updateTeacher,
@@ -214,6 +335,12 @@ module.exports = {
     createDiscipline,
     updateDiscipline,
     deleteDiscipline,
-    getDiscipline
+    getDiscipline,
+    // Posts functions
+    createPost,
+    getAllPosts,
+    getPostById,
+    updatePost,
+    deletePost
 };
 

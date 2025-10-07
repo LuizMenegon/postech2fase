@@ -21,5 +21,11 @@ router.put('/updateClass/:id', controller.updateClass);
 router.get('/getClass/:id', controller.getClass);
 router.get('/getAllClasses', controller.getAllClasses);
 
+// Posts routes
+router.get('/posts', controller.getAllPosts);
+router.get('/posts/:id', controller.getPostById);
+router.post('/posts', controller.createPost);
+router.put('/posts/:id', controller.updatePost);
+router.delete('/posts/:id', controller.deletePost);
 
 module.exports = router;

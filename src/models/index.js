@@ -1,6 +1,7 @@
 const Teacher = require('./Teacher');
 const Discipline = require('./Discipline');
 const Class = require('./Class');
+const Post = require('./Post');
 
 // Definindo associações
 Teacher.hasMany(Discipline, { 
@@ -26,5 +27,6 @@ Class.belongsTo(Discipline, {
 module.exports = {
     Teacher,
     Discipline,
-    Class
+    Class,
+    Post
 };
